@@ -26,8 +26,8 @@ terraform {
 }
 
 provider "google" {
-  # Replace with your own project ID.
-  project = "s26-485220"
+  # GCP project used for this recitation.
+  project = "cmu-26fall-recitation-5"
   region  = "us-central1"
 
   # Loads service account credentials from a local file.
@@ -86,7 +86,7 @@ resource "google_compute_instance" "nginx_instance" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 
@@ -107,7 +107,7 @@ resource "google_compute_instance" "web1" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 
@@ -123,7 +123,7 @@ resource "google_compute_instance" "web2" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 
@@ -139,7 +139,7 @@ resource "google_compute_instance" "web3" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 
@@ -157,7 +157,7 @@ resource "google_compute_instance" "mysqldb" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 

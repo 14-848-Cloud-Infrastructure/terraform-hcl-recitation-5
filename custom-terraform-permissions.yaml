@@ -34,7 +34,7 @@ includedPermissions:
   - compute.disks.list
   - compute.disks.use
   - compute.disks.useReadOnly
-  # Images (for debian-cloud/debian-11)
+  # Images (for debian-cloud/debian-12)
   - compute.images.get
   - compute.images.list
   # Zones (for data source / listing)

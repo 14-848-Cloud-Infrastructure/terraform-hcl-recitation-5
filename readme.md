@@ -1,54 +1,81 @@
 # Readme
-**NOTE: Please replace all the project id `s26-485220` with your own project id** 
+**Project ID: `cmu-26fall-recitation-5`.** The commands and Terraform examples below use this project. Please replace it with your own project id.
 
 ## Setup
 
 ### setup gcloud, terraform, service accounts
+For a fresh project, first link an active billing account. Run the setup commands with a user account that can enable APIs (`serviceusage.services.enable`, included in `roles/serviceusage.serviceUsageAdmin`) and manage the service account and IAM roles below.
+
 ```bash
 # login gcloud cli to your corresponding account
 gcloud auth login
 
-#enable required apis
-gcloud services enable iam.googleapis.com
-gcloud services enable cloudresourcemanager.googleapis.com
+# select the project before enabling APIs or creating service accounts
+gcloud config set project cmu-26fall-recitation-5
+gcloud config get-value project
+
+# Enable required APIs before terraform plan (including its Compute data sources).
+# This waits for API enablement to finish; it can be rerun for an existing project.
+gcloud services enable \
+  serviceusage.googleapis.com \
+  iam.googleapis.com \
+  cloudresourcemanager.googleapis.com \
+  compute.googleapis.com \
+  storage.googleapis.com \
+  --project=cmu-26fall-recitation-5
 
 # initialize terraform 
 terraform init
 
 # create new service account for terraform 
 # It will have limited permissions (principle of least privilege)
-gcloud iam service-accounts create terraform-sa --display-name="Terraform"
+gcloud iam service-accounts create terraform-sa --display-name="Terraform" \
+  --project=cmu-26fall-recitation-5
 gcloud iam service-accounts keys create key.json \
-     --iam-account=terraform-sa@s26-485220.iam.gserviceaccount.com
+     --iam-account=terraform-sa@cmu-26fall-recitation-5.iam.gserviceaccount.com
 
 # The command above will create the key.json file in the same folder where it is executed. 
 
 # Add required roles to the service account
-gcloud projects add-iam-policy-binding s26-485220 \
-  --member="serviceAccount:terraform-sa@s26-485220.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding cmu-26fall-recitation-5 \
+  --member="serviceAccount:terraform-sa@cmu-26fall-recitation-5.iam.gserviceaccount.com" \
   --role="roles/compute.networkViewer"
 
 ```
+
+API enablement is a project setup step. `custom-terraform-permissions.yaml` defines what the Terraform service account can do; granting those permissions does not enable APIs. This setup uses your logged-in `gcloud` user to enable APIs before Terraform reads zones and the default network during `plan`. No additional API-enablement permissions are needed in the Terraform custom role for this workflow. See Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable).
 
 #### Custom roles with principle of least privilege 
 Let us create a custom permission and keep all the roles that this terraform config requires there. 
 I already have a `custom-terraform-permissions.yaml` file. You can copy this file and modify it as required. 
 ```sh
 gcloud iam roles create terraformSaPermissions \
-  --project=s26-485220 \
+  --project=cmu-26fall-recitation-5 \
   --file=custom-terraform-permissions.yaml
 
 # then assign the role to our terraform-sa service account
-gcloud projects add-iam-policy-binding s26-485220 \
-  --member="serviceAccount:terraform-sa@s26-485220.iam.gserviceaccount.com" \
-  --role="projects/s26-485220/roles/terraformSaPermissions"
+gcloud projects add-iam-policy-binding cmu-26fall-recitation-5 \
+  --member="serviceAccount:terraform-sa@cmu-26fall-recitation-5.iam.gserviceaccount.com" \
+  --role="projects/cmu-26fall-recitation-5/roles/terraformSaPermissions"
 ```
 When new permission is required, add it in the `includedPermissions` array of `custom-terraform-permissions.yaml` file, and update the role 
 ```sh
 gcloud iam roles update terraformSaPermissions \
-  --project=s26-485220 \
+  --project=cmu-26fall-recitation-5 \
   --file=custom-terraform-permissions.yaml
 ```
+
+### VM image
+
+The VM examples use `debian-cloud/debian-12`. Debian 11 reached end of support and image deprecation on August 31, 2026; use a supported image family for new deployments. See Google's [OS support table](https://docs.cloud.google.com/compute/docs/images/os-details#debian).
+
+You can check that the image family resolves before planning:
+
+```bash
+gcloud compute images describe-from-family debian-12 --project=debian-cloud
+```
+
+`debian-cloud` is Google's public image project; keep that project name for this lookup. Terraform creates the VMs in `cmu-26fall-recitation-5`. The command above uses your logged-in `gcloud` account, while Terraform uses the service account in `key.json`.
 
 ## terraform init, plan, review, apply, destroy
 These are the most common commands used in terraform.
@@ -131,7 +158,7 @@ Here are some common files:
 
 ```sh
 # pass input values from flags
-terraform plan -out s1.tfplan -var="project-id=s26-485220"
+terraform plan -out s1.tfplan -var="project-id=cmu-26fall-recitation-5"
 
 # pass input values from a file
 terraform plan -out s1.tfplan -var-file="inputs.tfvars"
@@ -160,7 +187,7 @@ variable "instance_count" {
 
 **Example `prod.tfvars`:**
 ```hcl
-project_id     = "prod-project-123"
+project_id     = "cmu-26fall-recitation-5"
 instance_count = 5
 ```
 
@@ -168,7 +195,7 @@ Think of it as: `variables.tf` defines **what** variables exist and their constr
 
 For example, we could have a `dev.tfvars` file with smaller instance_count
 ```hcl
-project_id     = "test-project-123"
+project_id     = "cmu-26fall-recitation-5"
 instance_count = 1
 ```
 
@@ -231,5 +258,5 @@ Let's use GCS bucket in our case. https://developer.hashicorp.com/terraform/lang
 We follow the following steps:
 1. First, create the required storage bucket in GCP
 2. Then add the backend inside the terraform block. 
-3. Then run `terraform init -backend-config="bucket=remotestate_s26-485220" -backend-config="credentials=key.json"`
+3. Then run `terraform init -backend-config="bucket=remotestate_cmu-26fall-recitation-5" -backend-config="credentials=key.json"`
 4. The config files will be stored in the remote backend.
