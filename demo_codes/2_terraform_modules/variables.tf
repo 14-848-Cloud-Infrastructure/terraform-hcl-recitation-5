@@ -8,7 +8,8 @@ These inputs are consumed by:
 
 variable "project-id" {
   # GCP project ID where resources are created.
-  type = string
+  type    = string
+  default = "cmu-26fall-recitation-5"
 }
 
 variable "region" {

@@ -25,7 +25,7 @@ From this directory:
 
 ```bash
 terraform init
-terraform plan -var-file=inputs.tfvars -out=tfplan
+terraform plan -var="project-id=cmu-26fall-recitation-5" -var="region=us-central1" -out=tfplan
 terraform apply tfplan
 ```
 

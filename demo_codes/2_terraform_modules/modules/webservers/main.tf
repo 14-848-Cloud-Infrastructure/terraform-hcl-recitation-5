@@ -35,7 +35,7 @@ resource "google_compute_instance" "web-instances" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = "debian-cloud/debian-12"
     }
   }
 

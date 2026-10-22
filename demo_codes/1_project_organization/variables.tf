@@ -11,8 +11,9 @@ Naming note:
 */
 
 variable "project-id" {
-  # GCP project ID (ex: "my-project-123").
-  type = string
+  # GCP project ID where resources are created.
+  type    = string
+  default = "cmu-26fall-recitation-5"
 }
 
 variable "region" {

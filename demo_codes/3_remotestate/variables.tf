@@ -6,7 +6,8 @@ This demo keeps inputs minimal: project + (optional) region/zone for provider de
 
 variable "project-id" {
   # GCP project ID where the bucket will be created.
-  type = string
+  type    = string
+  default = "cmu-26fall-recitation-5"
 }
 
 variable "region" {
