@@ -1,6 +1,29 @@
 /*
 Root example: Full configuration in a single file + remote state backend
 
+                       Internet
+                          |
+                          v
++--------------- Existing default VPC ----------------+
+|                                                    |
+|  +---------------- Subnet: subnet1 -------------+  |
+|  |                                              |  |
+|  |              nginx-proxy                     |  |
+|  |              Public IP                       |  |
+|  |                   |                          |  |
+|  |         +---------+---------+                |  |
+|  |         v         v         v                |  |
+|  |       web1      web2      web3                |  |
+|  |         |         |         |                |  |
+|  |         +---------+---------+                |  |
+|  |                   v                          |  |
+|  |                mysqldb                       |  |
+|  |                                              |  |
+|  |    All five VMs have internal IP addresses.   |  |
+|  +----------------------------------------------+  |
++----------------------------------------------------+
+
+
 This file appears to be a "monolithic" version of the GCP example:
 - Provider + data sources
 - Networking (subnet + firewall)
